@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HealthBot AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+
+/* ═══════════════════════════════════
+   VARIABLES
+═══════════════════════════════════ */
+:root {
+  --teal:        #0d9488;
+  --teal-dark:   #0f766e;
+  --teal-glow:   rgba(13,148,136,0.15);
+  --teal-light:  #f0fdfa;
+  --navy:        #0f172a;
+  --slate:       #475569;
+  --muted:       #94a3b8;
+  --border:      #e2e8f0;
+  --bg:          #f1f5f9;
+  --white:       #ffffff;
+  --user-grad:   linear-gradient(135deg,#0d9488,#0a6b64);
+  --hdr:         linear-gradient(135deg,#064e3b 0%,#065f46 35%,#0d9488 70%,#14b8a6 100%);
+  --sb-w:        260px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  color:var(--navy);
+}
+
+/* ═══════════════════════════════════
+   HEADER
+═══════════════════════════════════ */
+header {
+  background:var(--hdr);
+  height:64px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:14px;
+  flex-shrink:0;
+  box-shadow:0 2px 30px rgba(6,78,59,0.45);
+  position:relative;
+  overflow:hidden;
+  z-index:20;
+}
+header::before {
+  content:'';position:absolute;
+  width:240px;height:240px;
+  background:rgba(255,255,255,0.04);
+  border-radius:50%;top:-110px;right:200px;
+  pointer-events:none;
+}
+header::after {
+  content:'';position:absolute;
+  width:180px;height:180px;
+  background:rgba(255,255,255,0.05);
+  border-radius:50%;top:-80px;right:100px;
+  pointer-events:none;
+}
+
+.h-logo {
+  width:44px;height:44px;
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.22);
+  border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  position:relative;z-index:1;
+}
+.h-text{position:relative;z-index:1;}
+.h-text h1 {
+  font-family:'Playfair Display',serif;
+  font-size:20px;color:white;letter-spacing:-0.2px;
+}
+.h-text p{font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px;}
+
+.h-right {
+  margin-left:auto;display:flex;align-items:center;gap:10px;
+  position:relative;z-index:1;
+}
+.badge {
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:20px;padding:5px 13px;
+  font-size:11.5px;color:rgba(255,255,255,0.88);font-weight:500;
+}
+.pdot {
+  width:7px;height:7px;background:#4ade80;
+  border-radius:50%;animation:pd 2s ease infinite;
+}
+@keyframes pd{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:0.5;}}
+
+.rbtn {
+  background:rgba(255,255,255,0.13);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:9px;color:white;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  padding:7px 15px;cursor:pointer;transition:all 0.2s;
+}
+.rbtn:hover{background:rgba(255,255,255,0.22);transform:translateY(-1px);}
+
+/* ═══════════════════════════════════
+   LAYOUT
+═══════════════════════════════════ */
+.layout {
+  display:flex;
+  flex:1;
+  overflow:hidden;
+}
+
+/* ═══════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════ */
+.sidebar {
+  width:var(--sb-w);
+  background:white;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px 16px;
+  gap:0;
+  flex-shrink:0;
+  overflow-y:auto;
+}
+.sidebar::-webkit-scrollbar{width:0;}
+
+/* ── Robot Doctor ── */
+.robot-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  margin-bottom:18px;
+  width:100%;
+}
+
+/* Speech bubble */
+.speech-bubble {
+  background:var(--teal-light);
+  border:1.5px solid #99f6e4;
+  border-radius:14px;
+  border-bottom-left-radius:4px;
+  padding:10px 13px;
+  font-size:12px;
+  color:var(--teal-dark);
+  font-weight:500;
+  line-height:1.5;
+  text-align:center;
+  width:100%;
+  margin-bottom:10px;
+  position:relative;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.speech-bubble::after {
+  content:'';
+  position:absolute;
+  bottom:-10px;left:30px;
+  border:5px solid transparent;
+  border-top-color:#99f6e4;
+}
+
+/* SVG Robot */
+.robot-svg {
+  width:130px;height:auto;
+  animation:bob 3s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,100%{transform:translateY(0);}
+  50%    {transform:translateY(-6px);}
+}
+
+/* Eyes blink */
+.eye { animation:blink 4s ease-in-out infinite; }
+@keyframes blink {
+  0%,90%,100%{transform:scaleY(1);}
+  95%        {transform:scaleY(0.1);}
+}
+
+/* Heartbeat line on chest screen */
+.hb-line {
+  stroke-dasharray:60;
+  stroke-dashoffset:60;
+  animation:hb 2s ease-in-out infinite;
+}
+@keyframes hb {
+  0%  {stroke-dashoffset:60;}
+  50% {stroke-dashoffset:0;}
+  100%{stroke-dashoffset:-60;}
+}
+
+/* ── Progress ── */
+.sb-label {
+  font-size:10px;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--muted);
+  width:100%;margin-bottom:10px;
+}
+
+.step {
+  display:flex;align-items:center;gap:9px;
+  width:100%;padding:5px 0;
+  font-size:12.5px;font-weight:500;color:#b0bec5;
+  transition:all 0.3s;
+}
+.step.done  {color:#0f766e;}
+.step.active{color:var(--navy);font-weight:700;}
+
+.sic {
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;background:#f1f5f9;
+  border:1.5px solid var(--border);flex-shrink:0;
+  transition:all 0.3s;
+}
+.step.done  .sic{background:#d1fae5;border-color:#6ee7b7;}
+.step.active .sic{background:var(--teal);border-color:var(--teal);color:white;}
+
+/* Progress bar */
+.prog-bar-wrap {
+  width:100%;height:5px;
+  background:#f1f5f9;border-radius:10px;
+  margin:14px 0 18px;overflow:hidden;
+}
+.prog-bar {
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--teal),#14b8a6);
+  transition:width 0.5s ease;
+  width:0%;
+}
+
+/* ═══════════════════════════════════
+   MAIN CHAT
+═══════════════════════════════════ */
+.main {
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;background:var(--bg);
+}
+
+#chat-box {
+  flex:1;overflow-y:auto;
+  padding:20px 24px 10px;
+  display:flex;flex-direction:column;gap:4px;
+  scroll-behavior:smooth;
+}
+#chat-box::-webkit-scrollbar{width:4px;}
+#chat-box::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;}
+
+.date-div {
+  text-align:center;font-size:11px;color:var(--muted);
+  font-weight:500;padding:4px 0 12px;
+}
+.date-div::before,.date-div::after {
+  content:'';display:inline-block;
+  width:50px;height:1px;background:var(--border);
+  vertical-align:middle;margin:0 8px;
+}
+
+/* ── Bubbles ── */
+.msg-row {
+  display:flex;align-items:flex-end;gap:9px;
+  margin-bottom:10px;animation:mi 0.25s ease;
+}
+.msg-row.user{flex-direction:row-reverse;}
+@keyframes mi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.av {
+  width:36px;height:36px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0;
+}
+.av.bot {
+  background:var(--user-grad);
+  box-shadow:0 3px 10px rgba(13,148,136,0.3);
+}
+.av.user {
+  background:linear-gradient(135deg,#334155,#1e293b);
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.bw{display:flex;flex-direction:column;max-width:72%;}
+.msg-row.user .bw{align-items:flex-end;}
+
+.bb {
+  padding:12px 16px;border-radius:18px;
+  font-size:13.5px;line-height:1.72;
+  white-space:pre-wrap;word-wrap:break-word;
+}
+.bb.bot {
+  background:white;color:var(--navy);
+  border-bottom-left-radius:4px;
+  box-shadow:0 1px 8px rgba(0,0,0,0.07);
+  border:1px solid var(--border);
+}
+.bb.user {
+  background:var(--user-grad);color:white;
+  border-bottom-right-radius:4px;
+  box-shadow:0 4px 14px rgba(13,148,136,0.28);
+}
+.bb.report {
+  background:linear-gradient(150deg,#f0fdf9,#ecfdf5);
+  border:1.5px solid #6ee7b7;border-radius:18px;
+  box-shadow:0 4px 18px rgba(13,148,136,0.13);
+  font-size:13px;
+}
+.bb.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;}
+
+.mt{font-size:10px;color:var(--muted);margin-top:4px;padding:0 3px;}
+.msg-row.user .mt{text-align:right;}
+
+/* ── Typing ── */
+#trow {
+  display:none;align-items:flex-end;gap:9px;
+  margin-bottom:10px;animation:mi 0.25s ease;
+}
+.tbbl {
+  background:white;border:1px solid var(--border);
+  border-radius:18px;border-bottom-left-radius:4px;
+  padding:13px 16px;display:flex;gap:5px;
+  box-shadow:0 1px 8px rgba(0,0,0,0.07);
+}
+.td {
+  width:6px;height:6px;background:var(--teal);
+  border-radius:50%;animation:tda 1.2s ease infinite;
+}
+.td:nth-child(2){animation-delay:.18s;}
+.td:nth-child(3){animation-delay:.36s;}
+@keyframes tda{0%,100%{transform:translateY(0);opacity:0.4;}50%{transform:translateY(-6px);opacity:1;}}
+
+/* ── Pills ── */
+#pills {
+  display:none;padding:8px 24px;gap:8px;flex-wrap:wrap;
+  border-top:1px solid var(--border);background:white;
+}
+.pill {
+  background:#f8fafc;border:1.5px solid var(--border);
+  border-radius:20px;padding:6px 14px;
+  font-size:12px;font-family:'Inter',sans-serif;font-weight:600;
+  color:var(--slate);cursor:pointer;transition:all 0.15s;
+}
+.pill:hover{border-color:var(--teal);color:var(--teal-dark);background:var(--teal-light);transform:translateY(-1px);}
+
+/* ── Input ── */
+.ibar {
+  background:white;border-top:1px solid var(--border);
+  padding:12px 20px;box-shadow:0 -4px 18px rgba(0,0,0,0.05);
+  flex-shrink:0;
+}
+.irow{display:flex;gap:10px;align-items:center;}
+#inp {
+  flex:1;border:1.5px solid var(--border);border-radius:13px;
+  padding:12px 17px;font-family:'Inter',sans-serif;
+  font-size:13.5px;color:var(--navy);background:#f8fafc;
+  outline:none;transition:all 0.2s;
+}
+#inp::placeholder{color:#b0bec5;}
+#inp:focus{border-color:var(--teal);background:white;box-shadow:0 0 0 3px var(--teal-glow);}
+#snd {
+  height:46px;padding:0 22px;
+  background:var(--user-grad);color:white;border:none;
+  border-radius:12px;font-family:'Inter',sans-serif;
+  font-weight:700;font-size:13.5px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(13,148,136,0.32);
+  transition:all 0.2s;display:flex;align-items:center;gap:7px;flex-shrink:0;
+}
+#snd:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,148,136,0.42);}
+#snd:active{transform:translateY(0);}
+
+@media(max-width:640px){
+  .sidebar{display:none;}
+  header{padding:0 14px;}
+  #chat-box{padding:14px 12px 8px;}
+  .ibar{padding:10px 12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="h-logo">🩺</div>
+  <div class="h-text">
+    <h1>HealthBot AI</h1>
+    <p>Smart symptom checker &amp; disease predictor</p>
+  </div>
+  <div class="h-right">
+    <div class="badge"><div class="pdot"></div>Online</div>
+    <button class="rbtn" onclick="restartChat()">⟳ New Chat</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ════ SIDEBAR ════ -->
+  <div class="sidebar">
+    <div class="robot-wrap">
+
+      <!-- Speech bubble -->
+      <div class="speech-bubble" id="robot-msg">
+        Hi! I'm Dr. Bot 👋<br>Tell me how you feel!
+      </div>
+
+      <!-- Animated Robot SVG -->
+      <svg class="robot-svg" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- Antenna -->
+        <line x1="60" y1="10" x2="60" y2="22" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="60" cy="8" r="5" fill="#14b8a6">
+          <animate attributeName="r" values="5;7;5" dur="1.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Head -->
+        <rect x="25" y="22" width="70" height="55" rx="16" fill="#0d9488"/>
+        <!-- Head shine -->
+        <ellipse cx="45" cy="32" rx="12" ry="6" fill="rgba(255,255,255,0.15)" transform="rotate(-20,45,32)"/>
+
+        <!-- Eyes -->
+        <g class="eye" transform-origin="40 47">
+          <rect x="33" y="40" width="14" height="14" rx="4" fill="white"/>
+          <circle cx="40" cy="47" r="4" fill="#0f766e"/>
+          <circle cx="42" cy="45" r="1.5" fill="white"/>
+        </g>
+        <g class="eye" transform-origin="80 47">
+          <rect x="73" y="40" width="14" height="14" rx="4" fill="white"/>
+          <circle cx="80" cy="47" r="4" fill="#0f766e"/>
+          <circle cx="82" cy="45" r="1.5" fill="white"/>
+        </g>
+
+        <!-- Mouth (smile) -->
+        <path d="M46 63 Q60 74 74 63" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Ears -->
+        <rect x="14" y="38" width="11" height="20" rx="5" fill="#0a7a70"/>
+        <rect x="95" y="38" width="11" height="20" rx="5" fill="#0a7a70"/>
+        <!-- Ear detail -->
+        <rect x="17" y="43" width="5" height="10" rx="2.5" fill="#14b8a6"/>
+        <rect x="98" y="43" width="5" height="10" rx="2.5" fill="#14b8a6"/>
+
+        <!-- Neck -->
+        <rect x="52" y="77" width="16" height="10" rx="4" fill="#0a7a70"/>
+
+        <!-- Body -->
+        <rect x="18" y="87" width="84" height="58" rx="14" fill="#0f766e"/>
+        <!-- Body shine -->
+        <ellipse cx="38" cy="95" rx="10" ry="5" fill="rgba(255,255,255,0.1)" transform="rotate(-15,38,95)"/>
+
+        <!-- Chest screen -->
+        <rect x="30" y="95" width="60" height="32" rx="8" fill="#064e3b"/>
+        <rect x="32" y="97" width="56" height="28" rx="6" fill="#022c22"/>
+
+        <!-- Heartbeat line on chest screen -->
+        <polyline
+          points="34,111 42,111 46,100 50,122 54,105 58,111 86,111"
+          fill="none" stroke="#14b8a6" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          class="hb-line"/>
+
+        <!-- Arms -->
+        <rect x="2" y="90" width="16" height="40" rx="8" fill="#0a7a70"/>
+        <rect x="102" y="90" width="16" height="40" rx="8" fill="#0a7a70"/>
+        <!-- Hands -->
+        <circle cx="10" cy="132" r="8" fill="#0d9488"/>
+        <circle cx="110" cy="132" r="8" fill="#0d9488"/>
+
+        <!-- Stethoscope on right arm -->
+        <path d="M102 108 Q95 118 98 125" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="98" cy="127" r="3" fill="white" opacity="0.7"/>
+
+        <!-- Legs -->
+        <rect x="32" y="143" width="22" height="16" rx="8" fill="#0a7a70"/>
+        <rect x="66" y="143" width="22" height="16" rx="8" fill="#0a7a70"/>
+        <!-- Feet -->
+        <rect x="28" y="155" width="28" height="8" rx="4" fill="#064e3b"/>
+        <rect x="64" y="155" width="28" height="8" rx="4" fill="#064e3b"/>
+
+        <!-- Plus sign badge -->
+        <circle cx="96" cy="90" r="10" fill="#ef4444"/>
+        <rect x="93" y="87" width="6" height="6" rx="1" fill="white"/>
+        <rect x="91" y="89" width="10" height="2" rx="1" fill="white"/>
+        <rect x="94" y="86" width="4" height="8" rx="1" fill="white"/>
+      </svg>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="width:100%;margin-bottom:6px;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;">
+        <span class="sb-label" style="margin:0;">Progress</span>
+        <span id="pct">0%</span>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="pbar"></div></div>
+    </div>
+
+    <!-- Steps -->
+    <div class="step active" id="s-welcome"><div class="sic">👋</div>Welcome</div>
+    <div class="step"        id="s-name">   <div class="sic">✏️</div>Your Name</div>
+    <div class="step"        id="s-age">    <div class="sic">🎂</div>Age</div>
+    <div class="step"        id="s-gender"> <div class="sic">👤</div>Gender</div>
+    <div class="step"        id="s-symptoms"><div class="sic">🤒</div>Symptoms</div>
+    <div class="step"        id="s-confirm"> <div class="sic">🔍</div>Diagnosis</div>
+    <div class="step"        id="s-days">   <div class="sic">📅</div>Duration</div>
+    <div class="step"        id="s-severity"><div class="sic">📊</div>Severity</div>
+    <div class="step"        id="s-sym_confirm"><div class="sic">✔️</div>Verify</div>
+    <div class="step"        id="s-final">  <div class="sic">📋</div>Report</div>
+  </div>
+
+  <!-- ════ MAIN ════ -->
+  <div class="main">
+    <div id="chat-box">
+      <div class="date-div" id="datediv"></div>
+      <div id="trow">
+        <div class="av bot">🩺</div>
+        <div class="tbbl">
+          <div class="td"></div><div class="td"></div><div class="td"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick symptom pills -->
+    <div id="pills">
+      <button class="pill" onclick="tip('fever and headache')">🌡️ Fever & Headache</button>
+      <button class="pill" onclick="tip('stomach pain and nausea')">🤢 Stomach Pain</button>
+      <button class="pill" onclick="tip('cough and cold')">🤧 Cough & Cold</button>
+      <button class="pill" onclick="tip('fatigue and body ache')">😴 Fatigue</button>
+      <button class="pill" onclick="tip('skin rash and itching')">🩹 Skin Rash</button>
+    </div>
+
+    <div class="ibar">
+      <div class="irow">
+        <input id="inp" type="text" placeholder="Type your message here..." autocomplete="off"/>
+        <button id="snd" onclick="send()">Send ➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const box   = document.getElementById('chat-box');
+  const trow  = document.getElementById('trow');
+  const inp   = document.getElementById('inp');
+  const pills = document.getElementById('pills');
+  const pbar  = document.getElementById('pbar');
+  const pct   = document.getElementById('pct');
+  const robotMsg = document.getElementById('robot-msg');
+  let first = true;
+
+  // Date label
+  document.getElementById('datediv').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  const tnow = () => new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const scrollB = () => { box.scrollTop = box.scrollHeight; };
+
+  // Step data
+  const stepOrder = ['welcome','name','age','gender','symptoms','confirm','days','severity','sym_confirm','final'];
+  const stepIcons = ['👋','✏️','🎂','👤','🤒','🔍','📅','📊','✔️','📋'];
+
+  // Robot messages per step
+  const robotSays = {
+    welcome:     "Hi! I'm Dr. Bot 👋\nTell me how you feel!",
+    name:        "Nice! What's\nyour name? 😊",
+    age:         "Great!\nHow old are you?",
+    gender:      "Got it!\nWhat's your gender?",
+    symptoms:    "Describe your\nsymptoms please 🤒",
+    confirm:     "Analysing your\nsymptoms... 🔍",
+    days:        "Almost there!\nHow long have\nyou felt this? 📅",
+    severity:    "Rate your pain\n1 to 10 📊",
+    sym_confirm: "Let me verify\nyour symptoms ✔️",
+    final:       "Here's your\nhealth report! 📋",
+  };
+
+  function showT(v) { trow.style.display = v ? 'flex' : 'none'; scrollB(); }
+
+  /* ── Add message ── */
+  function addMsg(role, text) {
+    const isReport = text.includes('HEALTH REPORT');
+    const isWarn   = text.startsWith('⚠️');
+    const row = document.createElement('div');
+    row.className = `msg-row ${role}`;
+    const cls = role==='user' ? 'user' : isReport ? 'report' : isWarn ? 'bot warn' : 'bot';
+    row.innerHTML = `
+      <div class="av ${role}">${role==='bot'?'🩺':'👤'}</div>
+      <div class="bw">
+        <div class="bb ${cls}">${text}</div>
+        <div class="mt">${tnow()}</div>
+      </div>`;
+    box.insertBefore(row, trow);
+    scrollB();
+  }
+
+  /* ── Update sidebar step + progress bar + robot message ── */
+  function setStep(step) {
+    const idx = stepOrder.indexOf(step);
+    if (idx < 0) return;
+
+    // Update steps
+    stepOrder.forEach((s, i) => {
+      const el = document.getElementById('s-' + s);
+      if (!el) return;
+      const ic = el.querySelector('.sic');
+      el.classList.remove('done','active');
+      if (i < idx) {
+        el.classList.add('done');
+        ic.textContent = '✓';
+      } else if (i === idx) {
+        el.classList.add('active');
+        ic.textContent = stepIcons[i];
+      } else {
+        ic.textContent = stepIcons[i];
+      }
+    });
+
+    // Progress bar
+    const prog = Math.round((idx / (stepOrder.length - 1)) * 100);
+    pbar.style.width = prog + '%';
+    pct.textContent  = prog + '%';
+
+    // Robot message
+    const msg = robotSays[step] || "I'm here\nto help! 💙";
+    robotMsg.innerHTML = msg.replace(/\n/g,'<br>');
+
+    // Quick pills
+    pills.style.display = step === 'symptoms' ? 'flex' : 'none';
+  }
+
+  /* ── Send ── */
+  async function send(override) {
+    const msg = override !== undefined ? override : inp.value.trim();
+    if (!override) inp.value = '';
+    if (!first && !msg) return;
+    if (!first && msg.toLowerCase() === 'restart') { restartChat(); return; }
+    if (!first) addMsg('user', msg);
+    first = false;
+    showT(true);
+
+    try {
+      const r = await fetch('/chat', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message: msg || ''})
+      });
+      const d = await r.json();
+      showT(false);
+      addMsg('bot', d.reply);
+      if (d.step) setStep(d.step);
+    } catch(e) {
+      showT(false);
+      addMsg('bot','⚠️ Connection error. Make sure Flask is running at http://127.0.0.1:5000');
+    }
+  }
+
+  function tip(t) { addMsg('user',t); first=false; send(t); }
+
+  /* ── Restart ── */
+  async function restartChat() {
+    try { await fetch('/restart',{method:'POST'}); } catch(e){}
+    box.innerHTML='';
+    const d=document.createElement('div');
+    d.className='date-div';
+    d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    box.appendChild(d);
+    box.appendChild(trow);
+    pills.style.display='none';
+    first=true;
+    setStep('welcome');
+    setTimeout(()=>send(''),300);
+  }
+
+  inp.addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();send();} });
+  window.addEventListener('load', () => setTimeout(()=>send(''),500));
+</script>
+</body>
+</html>
